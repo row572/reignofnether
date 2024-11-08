@@ -1,6 +1,5 @@
 package com.solegendary.reignofnether.ability.abilities;
 
-import net.minecraft.client.resources.language.I18n;
 import com.solegendary.reignofnether.ReignOfNether;
 import com.solegendary.reignofnether.hud.AbilityButton;
 import com.solegendary.reignofnether.keybinds.Keybinding;
@@ -44,7 +43,7 @@ public class Explode extends Ability {
             () -> UnitClientEvents.sendUnitCommand(UnitAction.EXPLODE),//CursorClientEvents.setLeftClickAction(UnitAction.EXPLODE),
             null,
             List.of(
-                FormattedCharSequence.forward(I18n.get("abilities.reignofnether.explode"), Style.EMPTY)
+                FormattedCharSequence.forward("Explode", Style.EMPTY)
             ),
             null
         );

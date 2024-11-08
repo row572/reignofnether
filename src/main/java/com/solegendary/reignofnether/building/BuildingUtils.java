@@ -11,7 +11,6 @@ import com.solegendary.reignofnether.building.buildings.villagers.OakBridge;
 import com.solegendary.reignofnether.building.buildings.villagers.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Rotation;
@@ -259,23 +258,6 @@ public class BuildingUtils {
             if (building instanceof NetherConvertingBuilding netherBuilding) {
                 double distSqr = bp.distSqr(building.centrePos);
                 if (distSqr <= Math.pow(netherBuilding.getMaxRange(), 2))
-                    return true;
-            }
-        }
-        return false;
-    }
-
-    public static boolean isWithinRangeOfMaxedCatalyst(LivingEntity entity) {
-        List<Building> buildings;
-        if (entity.level.isClientSide())
-            buildings = BuildingClientEvents.getBuildings();
-        else
-            buildings = BuildingServerEvents.getBuildings();
-
-        for (Building building : buildings) {
-            if (building instanceof SculkCatalyst sc && entity.distanceToSqr(Vec3.atCenterOf(sc.centrePos)) <
-                    SculkCatalyst.ESTIMATED_RANGE * SculkCatalyst.ESTIMATED_RANGE) {
-                if (sc.getUncappedNightRange() >= SculkCatalyst.nightRangeMax * 1.5f)
                     return true;
             }
         }

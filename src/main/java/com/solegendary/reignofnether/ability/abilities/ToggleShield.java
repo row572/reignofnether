@@ -1,6 +1,5 @@
 package com.solegendary.reignofnether.ability.abilities;
 
-import net.minecraft.client.resources.language.I18n;
 import com.solegendary.reignofnether.ReignOfNether;
 import com.solegendary.reignofnether.ability.Ability;
 import com.solegendary.reignofnether.hud.AbilityButton;
@@ -53,10 +52,10 @@ public class ToggleShield extends Ability {
                 () -> UnitClientEvents.sendUnitCommand(UnitAction.TOGGLE_SHIELD),
                 null,
                 List.of(
-                        FormattedCharSequence.forward(I18n.get("abilities.reignofnether.shield_stance"), Style.EMPTY),
+                        FormattedCharSequence.forward("Shield Stance", Style.EMPTY),
                         FormattedCharSequence.forward("", Style.EMPTY),
-                        FormattedCharSequence.forward(I18n.get("abilities.reignofnether.shield_stance.tooltip1"), Style.EMPTY),
-                        FormattedCharSequence.forward(I18n.get("abilities.reignofnether.shield_stance.tooltip2"), Style.EMPTY)
+                        FormattedCharSequence.forward("Raise or lower a shield - reducing projectile ", Style.EMPTY),
+                        FormattedCharSequence.forward("damage taken by 67% and movement speed by 50%.", Style.EMPTY)
                 ),
                 this
         );

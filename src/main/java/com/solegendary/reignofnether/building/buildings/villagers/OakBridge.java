@@ -6,6 +6,7 @@ import com.solegendary.reignofnether.building.BuildingBlockData;
 import com.solegendary.reignofnether.building.BuildingClientEvents;
 import com.solegendary.reignofnether.building.buildings.monsters.Mausoleum;
 import com.solegendary.reignofnether.building.buildings.shared.AbstractBridge;
+import com.solegendary.reignofnether.building.buildings.monsters.SpruceBridge;
 import com.solegendary.reignofnether.hud.AbilityButton;
 import com.solegendary.reignofnether.keybinds.Keybinding;
 import com.solegendary.reignofnether.research.ResearchClient;
@@ -13,8 +14,8 @@ import com.solegendary.reignofnether.resources.ResourceCost;
 import com.solegendary.reignofnether.resources.ResourceCosts;
 import com.solegendary.reignofnether.tutorial.TutorialClientEvents;
 import com.solegendary.reignofnether.tutorial.TutorialStage;
+import com.solegendary.reignofnether.util.Faction;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
@@ -37,16 +38,8 @@ public class OakBridge extends AbstractBridge {
     public final static ResourceCost cost = ResourceCosts.OAK_BRIDGE;
 
     public OakBridge(Level level, BlockPos originPos, Rotation rotation, String ownerName, boolean diagonal) {
-        super(level,
-            originPos,
-            rotation,
-            ownerName,
-            diagonal,
-            getCulledBlocks(
-                getAbsoluteBlockData(getRelativeBlockData(level, diagonal), level, originPos, rotation),
-                level
-            )
-        );
+        super(level, originPos, rotation, ownerName, diagonal,
+                getCulledBlocks(getAbsoluteBlockData(getRelativeBlockData(level, diagonal), level, originPos, rotation), level));
 
         this.name = buildingName;
         this.ownerName = ownerName;
@@ -68,43 +61,29 @@ public class OakBridge extends AbstractBridge {
 
     public static AbilityButton getBuildButton(Keybinding hotkey) {
         Minecraft MC = Minecraft.getInstance();
-        return new AbilityButton(OakBridge.buildingName,
-            new ResourceLocation(ReignOfNether.MOD_ID, "textures/icons/blocks/oak_fence.png"),
-            hotkey,
-            () -> BuildingClientEvents.getBuildingToPlace() == OakBridge.class,
-            () -> !TutorialClientEvents.isAtOrPastStage(TutorialStage.BUILD_BRIDGE),
-            () -> TutorialClientEvents.isAtOrPastStage(TutorialStage.BUILD_BRIDGE) && (
-                BuildingClientEvents.hasFinishedBuilding(TownCentre.buildingName)
-                    || BuildingClientEvents.hasFinishedBuilding(Mausoleum.buildingName) || ResearchClient.hasCheat(
-                    "modifythephasevariance")
-            ),
-            () -> BuildingClientEvents.setBuildingToPlace(OakBridge.class),
-            null,
-            List.of(FormattedCharSequence.forward(
-                    I18n.get("buildings.villagers.reignofnether.oak_bridge"),
-                    Style.EMPTY.withBold(true)
+        return new AbilityButton(
+                OakBridge.buildingName,
+                new ResourceLocation(ReignOfNether.MOD_ID, "textures/icons/blocks/oak_fence.png"),
+                hotkey,
+                () -> BuildingClientEvents.getBuildingToPlace() == OakBridge.class,
+                () -> !TutorialClientEvents.isAtOrPastStage(TutorialStage.BUILD_BRIDGE),
+                () -> TutorialClientEvents.isAtOrPastStage(TutorialStage.BUILD_BRIDGE) &&
+                       (BuildingClientEvents.hasFinishedBuilding(TownCentre.buildingName) ||
+                        BuildingClientEvents.hasFinishedBuilding(Mausoleum.buildingName) ||
+                        ResearchClient.hasCheat("modifythephasevariance")),
+                () -> BuildingClientEvents.setBuildingToPlace(OakBridge.class),
+                null,
+                List.of(
+                        FormattedCharSequence.forward(SpruceBridge.buildingName, Style.EMPTY.withBold(true)),
+                        ResourceCosts.getFormattedCost(cost),
+                        FormattedCharSequence.forward("", Style.EMPTY),
+                        FormattedCharSequence.forward("A bridge built to traverse water.", Style.EMPTY),
+                        FormattedCharSequence.forward("Must be connected to land or another bridge.", Style.EMPTY),
+                        FormattedCharSequence.forward("Can be built over lava (but isn't fireproof!)", Style.EMPTY),
+                        FormattedCharSequence.forward("", Style.EMPTY),
+                        FormattedCharSequence.forward("Bridges can be repaired or attacked by anyone.", Style.EMPTY)
                 ),
-                ResourceCosts.getFormattedCost(cost),
-                FormattedCharSequence.forward("", Style.EMPTY),
-                FormattedCharSequence.forward(
-                    I18n.get("buildings.villagers.reignofnether.oak_bridge.tooltip1"),
-                    Style.EMPTY
-                ),
-                FormattedCharSequence.forward(
-                    I18n.get("buildings.villagers.reignofnether.oak_bridge.tooltip2"),
-                    Style.EMPTY
-                ),
-                FormattedCharSequence.forward(
-                    I18n.get("buildings.villagers.reignofnether.oak_bridge.tooltip3"),
-                    Style.EMPTY
-                ),
-                FormattedCharSequence.forward("", Style.EMPTY),
-                FormattedCharSequence.forward(
-                    I18n.get("buildings.villagers.reignofnether.oak_bridge.tooltip4"),
-                    Style.EMPTY
-                )
-            ),
-            null
+                null
         );
     }
 }

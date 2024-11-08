@@ -1,13 +1,17 @@
 package com.solegendary.reignofnether.research;
 
+import com.solegendary.reignofnether.fogofwar.FogOfWarClientEvents;
 import com.solegendary.reignofnether.hud.HudClientEvents;
+import com.solegendary.reignofnether.unit.UnitActionItem;
 import com.solegendary.reignofnether.unit.UnitClientEvents;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import static com.solegendary.reignofnether.fogofwar.FogOfWarClientEvents.resetFogChunks;
 
 // class to track status of research items for the client player - we generally don't care about other players' research
 public class ResearchClient {
@@ -26,23 +30,18 @@ public class ResearchClient {
         synchronized (researchItems) {
             if (MC.player != null && MC.player.getName().getString().equals(ownerName)) {
                 researchItems.add(researchItemName);
-                HudClientEvents.showTemporaryMessage(I18n.get(
-                    "research.reignofnether.upgrade_completed",
-                    researchItemName
-                ));
+                HudClientEvents.showTemporaryMessage("Upgrade completed: " + researchItemName);
             }
         }
     }
 
     public static boolean hasResearch(String researchItemName) {
         synchronized (researchItems) {
-            if (hasCheat("medievalman")) {
+            if (hasCheat("medievalman"))
                 return true;
-            }
             for (String researchItem : researchItems)
-                if (researchItem.equals(researchItemName)) {
+                if (researchItem.equals(researchItemName))
                     return true;
-                }
             return false;
         }
     }
@@ -76,9 +75,8 @@ public class ResearchClient {
     public static boolean hasCheat(String cheatItemName) {
         synchronized (cheatItems) {
             for (String cheatItem : cheatItems)
-                if (cheatItem.equals(cheatItemName)) {
+                if (cheatItem.equals(cheatItemName))
                     return true;
-                }
             return false;
         }
     }

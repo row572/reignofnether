@@ -1,13 +1,11 @@
 package com.solegendary.reignofnether.unit;
 
 import com.solegendary.reignofnether.ability.Ability;
-import com.solegendary.reignofnether.building.Building;
-import com.solegendary.reignofnether.building.BuildingUtils;
-import com.solegendary.reignofnether.building.GarrisonableBuilding;
+import com.solegendary.reignofnether.building.*;
 import com.solegendary.reignofnether.building.buildings.piglins.Portal;
 import com.solegendary.reignofnether.hud.HudClientEvents;
-import com.solegendary.reignofnether.resources.ResourceName;
 import com.solegendary.reignofnether.resources.ResourceSources;
+import com.solegendary.reignofnether.resources.ResourceName;
 import com.solegendary.reignofnether.unit.goals.GatherResourcesGoal;
 import com.solegendary.reignofnether.unit.goals.ReturnResourcesGoal;
 import com.solegendary.reignofnether.unit.interfaces.AttackerUnit;
@@ -15,11 +13,12 @@ import com.solegendary.reignofnether.unit.interfaces.ConvertableUnit;
 import com.solegendary.reignofnether.unit.interfaces.Unit;
 import com.solegendary.reignofnether.unit.interfaces.WorkerUnit;
 import com.solegendary.reignofnether.util.MiscUtil;
-import net.minecraft.client.resources.language.I18n;
+import com.solegendary.reignofnether.util.MyMath;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import org.lwjgl.system.MathUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +31,8 @@ public class UnitActionItem {
     private final BlockPos preselectedBlockPos;
     private final BlockPos selectedBuildingPos;
 
-    private final List<UnitAction> nonAbilityActions = List.of(UnitAction.STOP,
+    private final List<UnitAction> nonAbilityActions = List.of(
+        UnitAction.STOP,
         UnitAction.HOLD,
         UnitAction.GARRISON,
         UnitAction.UNGARRISON,
@@ -50,13 +50,12 @@ public class UnitActionItem {
     );
 
     public UnitActionItem(
-        String ownerName,
-        UnitAction action,
-        int unitId,
-        int[] unitIds,
-        BlockPos preselectedBlockPos,
-        BlockPos selectedBuildingPos
-    ) {
+            String ownerName,
+            UnitAction action,
+            int unitId,
+            int[] unitIds,
+            BlockPos preselectedBlockPos,
+            BlockPos selectedBuildingPos) {
 
         this.ownerName = ownerName;
         this.action = action;
@@ -71,12 +70,10 @@ public class UnitActionItem {
         unit.setEntityCheckpointId(-1);
         unit.resetBehaviours();
         Unit.resetBehaviours(unit);
-        if (unit instanceof WorkerUnit workerUnit) {
+        if (unit instanceof WorkerUnit workerUnit)
             WorkerUnit.resetBehaviours(workerUnit);
-        }
-        if (unit instanceof AttackerUnit attackerUnit) {
+        if (unit instanceof AttackerUnit attackerUnit)
             AttackerUnit.resetBehaviours(attackerUnit);
-        }
     }
 
     // can be done server or clientside - but only serverside will have an effect on the world
@@ -86,9 +83,8 @@ public class UnitActionItem {
         ArrayList<Unit> actionableUnits = new ArrayList<>();
         for (int id : unitIds) {
             Entity entity = level.getEntity(id);
-            if (entity instanceof Unit unit && unit.getOwnerName().equals(this.ownerName)) {
+            if (entity instanceof Unit unit && unit.getOwnerName().equals(this.ownerName))
                 actionableUnits.add(unit);
-            }
         }
 
         for (Unit unit : actionableUnits) {
@@ -106,14 +102,12 @@ public class UnitActionItem {
                         case ORE -> goal.setTargetResourceName(ResourceName.NONE);
                     }
                 }
-            } else {
-                // if we are issuing a redundant unit attack command then don't resetBehaviours or else the unit will
-                // pause unnecessarily
+            }
+            else {
+                // if we are issuing a redundant unit attack command then don't resetBehaviours or else the unit will pause unnecessarily
                 // also don't reset if the action is an ability and the ability wasn't found on this unit
-                if ((
-                    action != UnitAction.ATTACK || unit.getTargetGoal().getTarget() == null
-                        || unit.getTargetGoal().getTarget().getId() != unitId
-                )) {
+                if ((action != UnitAction.ATTACK || unit.getTargetGoal().getTarget() == null ||
+                    unit.getTargetGoal().getTarget().getId() != unitId)) {
 
                     boolean foundAbility = false;
                     boolean shouldResetBehaviours = true;
@@ -124,25 +118,22 @@ public class UnitActionItem {
                             break;
                         }
                     }
-                    if (shouldResetBehaviours && (nonAbilityActions.contains(action) || foundAbility)) {
+                    if (shouldResetBehaviours && (nonAbilityActions.contains(action) || foundAbility))
                         resetBehaviours(unit);
-                    }
                 }
             }
             switch (action) {
                 case STOP -> {
                     Entity passenger = ((Entity) unit).getFirstPassenger();
-                    if (passenger instanceof Unit unitPassenger) {
+                    if (passenger instanceof Unit unitPassenger)
                         resetBehaviours(unitPassenger);
-                    }
                 }
                 case HOLD -> {
                     unit.setHoldPosition(true);
                 }
                 case GARRISON -> {
-                    if (unit.canGarrison()) {
+                    if (unit.canGarrison())
                         unit.getGarrisonGoal().setBuildingTarget(preselectedBlockPos);
-                    }
                 }
                 case UNGARRISON -> {
                     GarrisonableBuilding garr = GarrisonableBuilding.getGarrison(unit);
@@ -154,27 +145,24 @@ public class UnitActionItem {
                 }
                 case MOVE -> {
                     ResourceName resName = ResourceSources.getBlockResourceName(preselectedBlockPos, level);
-                    Building buildingAtPos = BuildingUtils.findBuilding(((Entity) unit).level.isClientSide(),
-                        preselectedBlockPos
-                    );
+                    Building buildingAtPos = BuildingUtils.findBuilding(((Entity) unit).level.isClientSide(), preselectedBlockPos);
 
-                    if (unit instanceof WorkerUnit workerUnit && resName != ResourceName.NONE
-                        && buildingAtPos == null) {
+                    if (unit instanceof WorkerUnit workerUnit && resName != ResourceName.NONE && buildingAtPos == null) {
                         GatherResourcesGoal goal = workerUnit.getGatherResourceGoal();
                         goal.setTargetResourceName(resName);
                         goal.setMoveTarget(preselectedBlockPos);
                         if (Unit.atMaxResources((Unit) workerUnit)) {
-                            if (level.isClientSide()) {
-                                HudClientEvents.showTemporaryMessage(I18n.get("hud.reignofnether.worker_inv_full"));
-                            }
+                            if (level.isClientSide())
+                                HudClientEvents.showTemporaryMessage("Worker inventory full, dropping off first...");
                             goal.saveAndReturnResources();
                         }
-                    } else if (buildingAtPos instanceof Portal portal
-                        && portal.portalType == Portal.PortalType.TRANSPORT && unit.canUsePortal()) {
+                    } else if (buildingAtPos instanceof Portal portal &&
+                            portal.portalType == Portal.PortalType.TRANSPORT &&
+                            unit.canUsePortal()) {
                         unit.getUsePortalGoal().setBuildingTarget(preselectedBlockPos);
-                    } else {
-                        unit.setMoveTarget(preselectedBlockPos);
                     }
+                    else
+                        unit.setMoveTarget(preselectedBlockPos);
                 }
                 case ATTACK_MOVE -> {
                     // if the unit can't actually attack just treat this as a move action
@@ -182,15 +170,15 @@ public class UnitActionItem {
                         MiscUtil.addUnitCheckpoint(unit, preselectedBlockPos);
                         unit.setIsCheckpointGreen(false);
                         attackerUnit.setAttackMoveTarget(preselectedBlockPos);
-                    } else {
-                        unit.setMoveTarget(preselectedBlockPos);
                     }
+                    else
+                        unit.setMoveTarget(preselectedBlockPos);
                 }
                 case ATTACK -> {
                     // if the unit can't actually attack just treat this as a follow action
-                    if (unit instanceof AttackerUnit attackerUnit) {
+                    if (unit instanceof AttackerUnit attackerUnit)
                         attackerUnit.setUnitAttackTarget((LivingEntity) level.getEntity(unitId));
-                    } else {
+                    else {
                         LivingEntity livingEntity = (LivingEntity) level.getEntity(unitId);
                         if (livingEntity != null) {
                             MiscUtil.addUnitCheckpoint(unit, unitId);
@@ -201,11 +189,10 @@ public class UnitActionItem {
                 }
                 case ATTACK_BUILDING -> {
                     // if the unit can't actually attack just treat this as a move action
-                    if (unit instanceof AttackerUnit attackerUnit) {
+                    if (unit instanceof AttackerUnit attackerUnit)
                         attackerUnit.setAttackBuildingTarget(preselectedBlockPos);
-                    } else {
+                    else
                         unit.setMoveTarget(preselectedBlockPos);
-                    }
                 }
                 case FOLLOW -> {
                     LivingEntity livingEntity = (LivingEntity) level.getEntity(unitId);
@@ -219,12 +206,11 @@ public class UnitActionItem {
                     // if the unit can't actually build/repair just treat this as a move action
                     if (unit instanceof WorkerUnit workerUnit) {
                         Building building = BuildingUtils.findBuilding(level.isClientSide(), preselectedBlockPos);
-                        if (building != null) {
+                        if (building != null)
                             workerUnit.getBuildRepairGoal().setBuildingTarget(building);
-                        }
-                    } else {
-                        unit.setMoveTarget(preselectedBlockPos);
                     }
+                    else
+                        unit.setMoveTarget(preselectedBlockPos);
                 }
                 case FARM -> {
                     if (unit instanceof WorkerUnit workerUnit) {
@@ -236,10 +222,8 @@ public class UnitActionItem {
                             if (building != null && building.name.contains(" Farm")) {
                                 goal.setTargetFarm(building);
                                 if (Unit.atMaxResources((Unit) workerUnit)) {
-                                    if (level.isClientSide()) {
-                                        HudClientEvents.showTemporaryMessage(I18n.get(
-                                            "hud.reignofnether.worker_inv_full"));
-                                    }
+                                    if (level.isClientSide())
+                                        HudClientEvents.showTemporaryMessage("Worker inventory full, dropping off first...");
                                     goal.saveAndReturnResources();
                                 }
                             }
@@ -247,69 +231,59 @@ public class UnitActionItem {
                     }
                 }
                 case RETURN_RESOURCES -> {
-                    if (unit instanceof WorkerUnit workerUnit) { // if we manually did this, ignore automated return
-                        // to gather
+                    if (unit instanceof WorkerUnit workerUnit) { // if we manually did this, ignore automated return to gather
                         GatherResourcesGoal goal = workerUnit.getGatherResourceGoal();
-                        if (goal != null) {
+                        if (goal != null)
                             goal.deleteSavedState();
-                        }
                     }
                     ReturnResourcesGoal returnResourcesGoal = unit.getReturnResourcesGoal();
                     Building building = BuildingUtils.findBuilding(false, preselectedBlockPos);
-                    if (returnResourcesGoal != null && building != null) {
+                    if (returnResourcesGoal != null && building != null)
                         returnResourcesGoal.setBuildingTarget(building);
-                    }
                 }
                 case RETURN_RESOURCES_TO_CLOSEST -> {
-                    if (unit instanceof WorkerUnit workerUnit) { // if we manually did this, ignore automated return
-                        // to gather
+                    if (unit instanceof WorkerUnit workerUnit) { // if we manually did this, ignore automated return to gather
                         GatherResourcesGoal goal = workerUnit.getGatherResourceGoal();
-                        if (goal != null) {
+                        if (goal != null)
                             goal.deleteSavedState();
-                        }
                     }
                     ReturnResourcesGoal returnResourcesGoal = unit.getReturnResourcesGoal();
-                    if (returnResourcesGoal != null) {
+                    if (returnResourcesGoal != null)
                         returnResourcesGoal.returnToClosestBuilding();
-                    }
                 }
                 case DELETE -> {
                     ((LivingEntity) unit).kill();
                 }
                 case DISCARD -> {
-                    if (unit instanceof ConvertableUnit cUnit) {
+                    if (unit instanceof ConvertableUnit cUnit)
                         cUnit.setShouldDiscard(true);
-                    }
                 }
 
                 // any other Ability not explicitly defined here
                 default -> {
                     for (Ability ability : unit.getAbilities()) {
                         if (ability.action == action && (ability.isOffCooldown() || ability.canBypassCooldown())) {
-                            if (ability.canTargetEntities && this.unitId > 0) {
+                            if (ability.canTargetEntities && this.unitId > 0)
                                 ability.use(level, unit, (LivingEntity) level.getEntity(unitId));
-                            } else {
+                            else
                                 ability.use(level, unit, preselectedBlockPos);
-                            }
                         }
                     }
                 }
             }
         }
-        if (this.selectedBuildingPos.equals(new BlockPos(0, 0, 0))) {
+        if (this.selectedBuildingPos.equals(new BlockPos(0, 0, 0)))
             return;
-        }
 
         Building actionableBuilding = BuildingUtils.findBuilding(level.isClientSide(), this.selectedBuildingPos);
 
         if (actionableBuilding != null) {
             for (Ability ability : actionableBuilding.getAbilities()) {
                 if (ability.action == action && (ability.isOffCooldown() || ability.canBypassCooldown())) {
-                    if (ability.canTargetEntities && this.unitId > 0) {
+                    if (ability.canTargetEntities && this.unitId > 0)
                         ability.use(level, actionableBuilding, (LivingEntity) level.getEntity(unitId));
-                    } else {
+                    else
                         ability.use(level, actionableBuilding, preselectedBlockPos);
-                    }
                 }
             }
         }

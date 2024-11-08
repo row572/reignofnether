@@ -1,6 +1,5 @@
 package com.solegendary.reignofnether.building;
 
-import com.solegendary.reignofnether.ReignOfNether;
 import com.solegendary.reignofnether.building.buildings.piglins.Portal;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -30,13 +29,11 @@ public class BuildingSaveData extends SavedData {
         if (server == null) {
             return create();
         }
-        return server.overworld()
-            .getDataStorage()
-            .computeIfAbsent(BuildingSaveData::load, BuildingSaveData::create, "saved-building-data");
+        return server.overworld().getDataStorage().computeIfAbsent(BuildingSaveData::load, BuildingSaveData::create, "saved-building-data");
     }
 
     public static BuildingSaveData load(CompoundTag tag) {
-        ReignOfNether.LOGGER.info("BuildingSaveData.load");
+        System.out.println("BuildingSaveData.load");
 
         BuildingSaveData data = create();
         ListTag ltag = (ListTag) tag.get("buildings");
@@ -54,18 +51,9 @@ public class BuildingSaveData extends SavedData {
                 boolean isBuilt = btag.getBoolean("isBuilt");
                 boolean isUpgraded = btag.getBoolean("isUpgraded");
                 Portal.PortalType portalType = Portal.PortalType.valueOf(btag.getString("portalType"));
-                data.buildings.add(new BuildingSave(pos,
-                    level,
-                    name,
-                    ownerName,
-                    rotation,
-                    rallyPoint,
-                    isDiagonalBridge,
-                    isBuilt,
-                    isUpgraded,
-                    portalType
-                ));
-                ReignOfNether.LOGGER.info("BuildingSaveData.load: " + ownerName + "|" + name);
+                data.buildings.add(new BuildingSave(pos, level, name, ownerName, rotation, rallyPoint,
+                                                    isDiagonalBridge, isBuilt, isUpgraded, portalType));
+                System.out.println("BuildingSaveData.load: " + ownerName + "|" + name);
             }
         }
         return data;
@@ -73,7 +61,7 @@ public class BuildingSaveData extends SavedData {
 
     @Override
     public CompoundTag save(CompoundTag tag) {
-        ReignOfNether.LOGGER.info("BuildingSaveData.save");
+        System.out.println("BuildingSaveData.save");
 
         ListTag list = new ListTag();
         this.buildings.forEach(b -> {
@@ -93,7 +81,7 @@ public class BuildingSaveData extends SavedData {
             cTag.putString("portalType", b.portalType != null ? b.portalType.name() : Portal.PortalType.BASIC.name());
             list.add(cTag);
 
-            ReignOfNether.LOGGER.info("BuildingSaveData.save: " + b.ownerName + "|" + b.name);
+            System.out.println("BuildingSaveData.save: " + b.ownerName + "|" + b.name);
         });
         tag.put("buildings", list);
         return tag;

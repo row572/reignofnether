@@ -10,7 +10,6 @@ import com.solegendary.reignofnether.unit.goals.RangedFlyingAttackGroundGoal;
 import com.solegendary.reignofnether.unit.interfaces.AttackerUnit;
 import com.solegendary.reignofnether.unit.interfaces.RangedAttackerUnit;
 import com.solegendary.reignofnether.unit.interfaces.Unit;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
@@ -48,7 +47,7 @@ public class AttackGround extends Ability {
                 () -> CursorClientEvents.setLeftClickAction(UnitAction.ATTACK_GROUND),
                 null,
                 List.of(
-                        FormattedCharSequence.forward(I18n.get("abilities.reignofnether.attack_ground"), Style.EMPTY)
+                        FormattedCharSequence.forward("Attack Ground", Style.EMPTY)
                 ),
                 this
         );

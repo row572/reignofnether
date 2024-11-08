@@ -1,7 +1,5 @@
 package com.solegendary.reignofnether.unit.units.monsters;
 
-import net.minecraft.client.resources.language.I18n;
-import net.minecraft.client.resources.language.I18n;
 import com.solegendary.reignofnether.ReignOfNether;
 import com.solegendary.reignofnether.building.*;
 import com.solegendary.reignofnether.hud.Button;
@@ -59,13 +57,13 @@ public class SkeletonProd extends ProductionItem {
             () -> BuildingServerboundPacket.startProduction(prodBuilding.originPos, itemName),
             null,
             List.of(
-                FormattedCharSequence.forward(I18n.get("units.monsters.reignofnether.skeleton"), Style.EMPTY.withBold(true)),
+                FormattedCharSequence.forward(SkeletonProd.itemName, Style.EMPTY.withBold(true)),
                 ResourceCosts.getFormattedCost(cost),
                 ResourceCosts.getFormattedPopAndTime(cost),
                 FormattedCharSequence.forward("", Style.EMPTY),
-                FormattedCharSequence.forward(I18n.get("units.monsters.reignofnether.skeleton.tooltip1"), Style.EMPTY),
+                FormattedCharSequence.forward("An undead soldier with a bow and arrows.", Style.EMPTY),
                 FormattedCharSequence.forward("", Style.EMPTY),
-                FormattedCharSequence.forward(I18n.get("units.monsters.reignofnether.skeleton.tooltip2"), Style.EMPTY)
+                FormattedCharSequence.forward("Skeletons will burn under sunlight.", Style.EMPTY)
             )
         );
     }
