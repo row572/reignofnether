@@ -223,6 +223,16 @@ public class NetherBlocks {
                 Blocks.OAK_LOG, Blocks.BIRCH_LOG, Blocks.ACACIA_LOG, Blocks.DARK_OAK_LOG,
                 Blocks.JUNGLE_LOG, Blocks.MANGROVE_LOG, Blocks.SPRUCE_LOG
             ));
+        MAPPINGS.put(BlockRegistrar.FALLING_CRIMSON_STEM.get(),
+            List.of(
+                BlockRegistrar.FALLING_OAK_LOG.get(),
+                BlockRegistrar.FALLING_ACACIA_LOG.get(),
+                BlockRegistrar.FALLING_BIRCH_LOG.get(),
+                BlockRegistrar.FALLING_MANGROVE_LOG.get(),
+                BlockRegistrar.FALLING_DARK_OAK_LOG.get(),
+                BlockRegistrar.FALLING_JUNGLE_LOG.get(),
+                BlockRegistrar.FALLING_SPRUCE_LOG.get()
+            ));
         MAPPINGS.put(Blocks.STRIPPED_CRIMSON_STEM,
             List.of(
                 Blocks.STRIPPED_OAK_LOG, Blocks.STRIPPED_BIRCH_LOG, Blocks.STRIPPED_ACACIA_LOG, Blocks.STRIPPED_DARK_OAK_LOG,

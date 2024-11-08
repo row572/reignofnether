@@ -25,12 +25,14 @@ public class RTSPlayer {
     // bot
     private RTSPlayer(String name, Faction faction) {
         int minId = 0;
-        if (!PlayerServerEvents.rtsPlayers.isEmpty())
+        if (!PlayerServerEvents.rtsPlayers.isEmpty()) {
             minId = Collections.min(PlayerServerEvents.rtsPlayers.stream().map(r -> r.id).toList());
-        if (minId >= 0)
+        }
+        if (minId >= 0) {
             this.id = -1;
-        else
+        } else {
             this.id = minId - 1;
+        }
         this.faction = faction;
         this.name = name;
     }
@@ -59,19 +61,24 @@ public class RTSPlayer {
     }
 
     public void tick() {
-        int numBuildingsOwned = BuildingServerEvents.getBuildings().stream().filter(
-                b -> b.ownerName.equals(this.name)
-        ).toList().size();
-        int numCapitolsOwned = BuildingServerEvents.getBuildings().stream().filter(
-                b -> b.ownerName.equals(this.name) && b.isCapitol
-        ).toList().size();
+        int numBuildingsOwned = BuildingServerEvents.getBuildings()
+            .stream()
+            .filter(b -> b.ownerName.equals(this.name))
+            .toList()
+            .size();
+        int numCapitolsOwned = BuildingServerEvents.getBuildings()
+            .stream()
+            .filter(b -> b.ownerName.equals(this.name) && b.isCapitol)
+            .toList()
+            .size();
 
         if (numBuildingsOwned > 0 && numCapitolsOwned == 0) {
             if (ticksWithoutCapitol < TICKS_TO_REVEAL) {
                 this.ticksWithoutCapitol += 1;
                 if (ticksWithoutCapitol == TICKS_TO_REVEAL) {
-                    if (FogOfWarServerEvents.isEnabled())
-                        PlayerServerEvents.sendMessageToAllPlayers(this.name + " has not rebuilt their capitol and is being revealed!");
+                    if (FogOfWarServerEvents.isEnabled()) {
+                        PlayerServerEvents.sendMessageToAllPlayers("server.reignofnether.revealed", false, this.name);
+                    }
                     FogOfWarClientboundPacket.revealOrHidePlayer(true, this.name);
                 }
             }

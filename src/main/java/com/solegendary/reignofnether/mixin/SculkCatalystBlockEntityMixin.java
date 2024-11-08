@@ -2,7 +2,9 @@ package com.solegendary.reignofnether.mixin;
 
 
 import com.solegendary.reignofnether.building.Building;
+import com.solegendary.reignofnether.building.BuildingClientEvents;
 import com.solegendary.reignofnether.building.BuildingServerEvents;
+import com.solegendary.reignofnether.building.BuildingUtils;
 import com.solegendary.reignofnether.building.buildings.monsters.SculkCatalyst;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
@@ -20,10 +22,13 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.SculkCatalystBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gameevent.BlockPositionSource;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Mutable;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -31,24 +36,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(SculkCatalystBlockEntity.class)
 public abstract class SculkCatalystBlockEntityMixin extends BlockEntity {
 
-    private @Final SculkSpreader sculkSpreader;
+    private @Shadow @Final SculkSpreader sculkSpreader;
 
     public SculkCatalystBlockEntityMixin(BlockEntityType<?> pType, BlockPos pPos, BlockState pBlockState) {
         super(pType, pPos, pBlockState);
-    }
-
-    private boolean isWithinRangeOfMaxedCatalystBuilding(LivingEntity entity) {
-        if (entity.level.isClientSide())
-            return true;
-
-        for (Building building : BuildingServerEvents.getBuildings()) {
-            if (building instanceof SculkCatalyst sc && entity.distanceToSqr(Vec3.atCenterOf(sc.centrePos)) <
-                    SculkCatalyst.ESTIMATED_RANGE * SculkCatalyst.ESTIMATED_RANGE) {
-                if (sc.getUncappedNightRange() >= SculkCatalyst.nightRangeMax * 1.5f)
-                    return true;
-            }
-        }
-        return false;
     }
 
     @Inject(
@@ -62,12 +53,16 @@ public abstract class SculkCatalystBlockEntityMixin extends BlockEntity {
         if (this.isRemoved()) {
             cir.setReturnValue(false);
         } else {
+            if (this.sculkSpreader == null) {
+                cir.setReturnValue(false);
+                return;
+            }
             GameEvent.Context $$2 = pEventMessage.context();
             if (pEventMessage.gameEvent() == GameEvent.ENTITY_DIE) {
                 Entity var5 = $$2.sourceEntity();
                 if (var5 instanceof LivingEntity) {
                     LivingEntity $$3 = (LivingEntity)var5;
-                    if (isWithinRangeOfMaxedCatalystBuilding($$3)) {
+                    if (BuildingUtils.isWithinRangeOfMaxedCatalyst($$3)) {
                         cir.setReturnValue(false);
                         return;
                     }

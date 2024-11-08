@@ -1,5 +1,7 @@
 package com.solegendary.reignofnether.unit.units.piglins;
 
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.client.resources.language.I18n;
 import com.solegendary.reignofnether.ReignOfNether;
 import com.solegendary.reignofnether.building.BuildingClientEvents;
 import com.solegendary.reignofnether.building.BuildingServerboundPacket;
@@ -43,14 +45,14 @@ public class BlazeProd extends ProductionItem {
 
     public static Button getStartButton(ProductionBuilding prodBuilding, Keybinding hotkey) {
         List<FormattedCharSequence> tooltipLines = new ArrayList<>(List.of(
-                FormattedCharSequence.forward(BlazeProd.itemName, Style.EMPTY.withBold(true)),
+                FormattedCharSequence.forward(I18n.get("units.piglins.reignofnether.blaze"), Style.EMPTY.withBold(true)),
                 ResourceCosts.getFormattedCost(cost),
                 ResourceCosts.getFormattedPopAndTime(cost),
                 FormattedCharSequence.forward("", Style.EMPTY),
-                FormattedCharSequence.forward("A fiery elemental that shoots fireballs from afar.", Style.EMPTY),
-                FormattedCharSequence.forward("Attacks are fast and ignite enemies but inaccurate.", Style.EMPTY),
+                FormattedCharSequence.forward(I18n.get("units.piglins.reignofnether.blaze.tooltip1"), Style.EMPTY),
+                FormattedCharSequence.forward(I18n.get("units.piglins.reignofnether.blaze.tooltip2"), Style.EMPTY),
                 FormattedCharSequence.forward("", Style.EMPTY),
-                FormattedCharSequence.forward("Requires a Flame Sanctuary.", Style.EMPTY)
+                FormattedCharSequence.forward(I18n.get("units.piglins.reignofnether.blaze.tooltip3"), Style.EMPTY)
         ));
 
         return new Button(

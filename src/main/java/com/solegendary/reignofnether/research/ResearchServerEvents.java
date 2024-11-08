@@ -1,6 +1,7 @@
 package com.solegendary.reignofnether.research;
 
 import com.mojang.datafixers.util.Pair;
+import com.solegendary.reignofnether.ReignOfNether;
 import com.solegendary.reignofnether.unit.UnitServerEvents;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
@@ -24,7 +25,7 @@ public class ResearchServerEvents {
             researchData.save();
             serverLevel.getDataStorage().save();
 
-            System.out.println("saved " + researchItems.size() + " researchItems in serverevents");
+            ReignOfNether.LOGGER.info("saved " + researchItems.size() + " researchItems in serverevents");
         }
     }
 
@@ -40,7 +41,7 @@ public class ResearchServerEvents {
             for (Pair<String, String> researchItem : researchItems)
                 syncResearch(researchItem.getFirst());
 
-            System.out.println("loaded " + researchItems.size() + " researchItems in serverevents");
+            ReignOfNether.LOGGER.info("loaded " + researchItems.size() + " researchItems in serverevents");
         }
     }
 
@@ -56,24 +57,29 @@ public class ResearchServerEvents {
 
     public static void syncResearch(String playerName) {
         for (Pair<String, String> researchItem : researchItems)
-            if (playerName.equals(researchItem.getFirst()))
+            if (playerName.equals(researchItem.getFirst())) {
                 ResearchClientboundPacket.addResearch(researchItem.getFirst(), researchItem.getSecond());
+            }
     }
 
     public static void addResearch(String playerName, String researchItemName) {
         researchItems.add(new Pair<>(playerName, researchItemName));
         saveResearch();
     }
+
     public static void removeResearch(String playerName, String researchItemName) {
         researchItems.removeIf(p -> p.getFirst().equals(playerName) && p.getSecond().equals(researchItemName));
         saveResearch();
     }
+
     public static boolean playerHasResearch(String playerName, String researchItemName) {
-        if (playerHasCheat(playerName, "medievalman"))
+        if (playerHasCheat(playerName, "medievalman")) {
             return true;
+        }
         for (Pair<String, String> researchItem : researchItems)
-            if (researchItem.getFirst().equals(playerName) && researchItem.getSecond().equals(researchItemName))
+            if (researchItem.getFirst().equals(playerName) && researchItem.getSecond().equals(researchItemName)) {
                 return true;
+            }
         return false;
     }
 
@@ -85,8 +91,9 @@ public class ResearchServerEvents {
 
     public static void syncCheats(String playerName) {
         for (Pair<String, String> cheatItem : cheatItems)
-            if (playerName.equals(cheatItem.getFirst()))
+            if (playerName.equals(cheatItem.getFirst())) {
                 ResearchClientboundPacket.addCheat(cheatItem.getFirst(), cheatItem.getSecond());
+            }
 
         ResearchClientboundPacket.addCheatWithValue(playerName, "thereisnospoon", UnitServerEvents.hardCapPopulation);
     }
@@ -94,13 +101,16 @@ public class ResearchServerEvents {
     public static void addCheat(String playerName, String cheatItemName) {
         cheatItems.add(new Pair<>(playerName, cheatItemName));
     }
+
     public static void removeCheat(String playerName, String cheatItemName) {
         cheatItems.removeIf(p -> p.getFirst().equals(playerName) && p.getSecond().equals(cheatItemName));
     }
+
     public static boolean playerHasCheat(String playerName, String cheatItemName) {
         for (Pair<String, String> cheatItem : cheatItems)
-            if (cheatItem.getFirst().equals(playerName) && cheatItem.getSecond().equals(cheatItemName))
+            if (cheatItem.getFirst().equals(playerName) && cheatItem.getSecond().equals(cheatItemName)) {
                 return true;
+            }
         return false;
     }
 }

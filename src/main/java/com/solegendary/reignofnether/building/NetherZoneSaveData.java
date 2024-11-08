@@ -1,5 +1,6 @@
 package com.solegendary.reignofnether.building;
 
+import com.solegendary.reignofnether.ReignOfNether;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -25,11 +26,13 @@ public class NetherZoneSaveData extends SavedData {
         if (server == null) {
             return create();
         }
-        return server.overworld().getDataStorage().computeIfAbsent(NetherZoneSaveData::load, NetherZoneSaveData::create, "saved-netherzone-data");
+        return server.overworld()
+            .getDataStorage()
+            .computeIfAbsent(NetherZoneSaveData::load, NetherZoneSaveData::create, "saved-netherzone-data");
     }
 
     public static NetherZoneSaveData load(CompoundTag tag) {
-        System.out.println("NetherZoneSaveData.load");
+        ReignOfNether.LOGGER.info("NetherZoneSaveData.load");
 
         NetherZoneSaveData data = create();
         ListTag ltag = (ListTag) tag.get("netherzones");
@@ -41,7 +44,7 @@ public class NetherZoneSaveData extends SavedData {
                 int x = ntag.getInt("x");
                 int y = ntag.getInt("y");
                 int z = ntag.getInt("z");
-                BlockPos origin = new BlockPos(x,y,z);
+                BlockPos origin = new BlockPos(x, y, z);
                 double maxRange = ntag.getDouble("maxRange");
                 double range = ntag.getDouble("range");
                 boolean isRestoring = ntag.getBoolean("isRestoring");
@@ -50,7 +53,8 @@ public class NetherZoneSaveData extends SavedData {
 
                 data.netherZones.add(NetherZone.getFromSave(origin, maxRange, range, isRestoring, ticksLeft, converts));
 
-                System.out.println("NetherZoneSaveData.load: " + origin + "|" + range + "/" + maxRange + "|" + isRestoring);
+                ReignOfNether.LOGGER.info(
+                    "NetherZoneSaveData.load: " + origin + "|" + range + "/" + maxRange + "|" + isRestoring);
             }
         }
         return data;
@@ -58,7 +62,7 @@ public class NetherZoneSaveData extends SavedData {
 
     @Override
     public CompoundTag save(CompoundTag tag) {
-        System.out.println("NetherZoneSaveData.save");
+        ReignOfNether.LOGGER.info("NetherZoneSaveData.save");
 
         ListTag list = new ListTag();
         this.netherZones.forEach(nz -> {
@@ -73,7 +77,9 @@ public class NetherZoneSaveData extends SavedData {
             cTag.putInt("converts", nz.getConvertsAfterConstantRange());
             list.add(cTag);
 
-            System.out.println("NetherZoneSaveData.save: " + nz.getOrigin() + "|" + (int) nz.getRange() + "/" + (int) nz.getMaxRange() + "|" + nz.isRestoring());
+            ReignOfNether.LOGGER.info(
+                "NetherZoneSaveData.save: " + nz.getOrigin() + "|" + (int) nz.getRange() + "/" + (int) nz.getMaxRange()
+                    + "|" + nz.isRestoring());
         });
         tag.put("netherzones", list);
         return tag;

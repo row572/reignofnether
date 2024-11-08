@@ -11,6 +11,7 @@ import com.solegendary.reignofnether.time.TimeClientEvents;
 import com.solegendary.reignofnether.unit.units.monsters.WardenProd;
 import com.solegendary.reignofnether.util.Faction;
 import com.solegendary.reignofnether.util.MiscUtil;
+import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
@@ -35,7 +36,13 @@ public class Stronghold extends ProductionBuilding implements GarrisonableBuildi
     private final static int MAX_OCCUPANTS = 7;
 
     public Stronghold(Level level, BlockPos originPos, Rotation rotation, String ownerName) {
-        super(level, originPos, rotation, ownerName, getAbsoluteBlockData(getRelativeBlockData(level), level, originPos, rotation), false);
+        super(level,
+            originPos,
+            rotation,
+            ownerName,
+            getAbsoluteBlockData(getRelativeBlockData(level), level, originPos, rotation),
+            false
+        );
         this.name = buildingName;
         this.ownerName = ownerName;
         this.portraitBlock = Blocks.REINFORCED_DEEPSLATE;
@@ -52,14 +59,15 @@ public class Stronghold extends ProductionBuilding implements GarrisonableBuildi
         this.startingBlockTypes.add(Blocks.POLISHED_BLACKSTONE_WALL);
         this.startingBlockTypes.add(Blocks.DEEPSLATE);
 
-        if (level.isClientSide())
-            this.productionButtons = Arrays.asList(
-                WardenProd.getStartButton(this, Keybindings.keyQ)
-            );
+        if (level.isClientSide()) {
+            this.productionButtons = List.of(WardenProd.getStartButton(this, Keybindings.keyQ));
+        }
         updateNightBorderBps();
     }
 
-    public int getNightRange() { return (isBuilt || isBuiltServerside) ? nightRange : 0; }
+    public int getNightRange() {
+        return (isBuilt || isBuiltServerside) ? nightRange : 0;
+    }
 
     @Override
     public void onBuilt() {
@@ -81,6 +89,10 @@ public class Stronghold extends ProductionBuilding implements GarrisonableBuildi
         return nightBorderBps;
     }
 
+    public Faction getFaction() {
+        return Faction.MONSTERS;
+    }
+    
     @Override
     public void tick(Level tickLevel) {
         super.tick(tickLevel);
@@ -88,45 +100,56 @@ public class Stronghold extends ProductionBuilding implements GarrisonableBuildi
             updateNightBorderBps();
     }
 
-    public Faction getFaction() {return Faction.MONSTERS;}
-
     // don't use this for abilities as it may not be balanced
-    public int getAttackRange() { return 30; }
+    public int getAttackRange() {
+        return 30;
+    }
+
     // bonus for units attacking garrisoned units
-    public int getExternalAttackRangeBonus() { return 15; }
+    public int getExternalAttackRangeBonus() {
+        return 15;
+    }
 
     public static ArrayList<BuildingBlock> getRelativeBlockData(LevelAccessor level) {
         return BuildingBlockData.getBuildingBlocks(structureName, level);
     }
 
     public boolean canDestroyBlock(BlockPos relativeBp) {
-        return relativeBp.getY() != 13 &&
-                relativeBp.getY() != 14;
+        return relativeBp.getY() != 13 && relativeBp.getY() != 14;
     }
 
     public static AbilityButton getBuildButton(Keybinding hotkey) {
-        return new AbilityButton(
-            Stronghold.buildingName,
+        return new AbilityButton(Stronghold.buildingName,
             new ResourceLocation("minecraft", "textures/block/reinforced_deepslate_side.png"),
             hotkey,
             () -> BuildingClientEvents.getBuildingToPlace() == Stronghold.class,
             () -> false,
-            () -> (BuildingClientEvents.hasFinishedBuilding(Graveyard.buildingName) &&
-                    BuildingClientEvents.hasFinishedBuilding(SpiderLair.buildingName) &&
-                    BuildingClientEvents.hasFinishedBuilding(Dungeon.buildingName)) ||
-                    ResearchClient.hasCheat("modifythephasevariance"),
+            () -> (
+                BuildingClientEvents.hasFinishedBuilding(Graveyard.buildingName)
+                    && BuildingClientEvents.hasFinishedBuilding(SpiderLair.buildingName)
+                    && BuildingClientEvents.hasFinishedBuilding(Dungeon.buildingName)
+            ) || ResearchClient.hasCheat("modifythephasevariance"),
             () -> BuildingClientEvents.setBuildingToPlace(Stronghold.class),
             null,
-            List.of(
-                    FormattedCharSequence.forward(Stronghold.buildingName, Style.EMPTY.withBold(true)),
-                    ResourceCosts.getFormattedCost(cost),
-                    FormattedCharSequence.forward("", Style.EMPTY),
-                    FormattedCharSequence.forward("A villainous stronghold that can produce wardens ", Style.EMPTY),
-                    FormattedCharSequence.forward("and garrison up to " + MAX_OCCUPANTS + " units.", Style.EMPTY),
-                    FormattedCharSequence.forward("", Style.EMPTY),
-                    FormattedCharSequence.forward("Distorts time to midnight within a " + nightRange + " block radius", Style.EMPTY),
-                    FormattedCharSequence.forward("", Style.EMPTY),
-                    FormattedCharSequence.forward("Requires a Graveyard, Spider Lair and Dungeon.", Style.EMPTY)
+            List.of(FormattedCharSequence.forward(I18n.get("buildings.monsters.reignofnether.stronghold"),
+                    Style.EMPTY.withBold(true)
+                ),
+                ResourceCosts.getFormattedCost(cost),
+                FormattedCharSequence.forward("", Style.EMPTY),
+                FormattedCharSequence.forward(I18n.get("buildings.monsters.reignofnether.stronghold.tooltip1"),
+                    Style.EMPTY
+                ),
+                FormattedCharSequence.forward(I18n.get("buildings.monsters.reignofnether.stronghold.tooltip2",
+                    MAX_OCCUPANTS
+                ), Style.EMPTY),
+                FormattedCharSequence.forward("", Style.EMPTY),
+                FormattedCharSequence.forward(I18n.get("buildings.monsters.reignofnether.stronghold.tooltip3",
+                    nightRange
+                ), Style.EMPTY),
+                FormattedCharSequence.forward("", Style.EMPTY),
+                FormattedCharSequence.forward(I18n.get("buildings.monsters.reignofnether.stronghold.tooltip4"),
+                    Style.EMPTY
+                )
             ),
             null
         );
@@ -140,29 +163,31 @@ public class Stronghold extends ProductionBuilding implements GarrisonableBuildi
     @Override
     public BlockPos getEntryPosition() {
         if (this.rotation == Rotation.NONE) {
-            return new BlockPos(5,14,5);
+            return new BlockPos(5, 14, 5);
         } else if (this.rotation == Rotation.CLOCKWISE_90) {
-            return new BlockPos(-5,14,5);
+            return new BlockPos(-5, 14, 5);
         } else if (this.rotation == Rotation.CLOCKWISE_180) {
-            return new BlockPos(-5,14,-5);
+            return new BlockPos(-5, 14, -5);
         } else {
-            return new BlockPos(5,14,-5);
+            return new BlockPos(5, 14, -5);
         }
     }
 
     @Override
     public BlockPos getExitPosition() {
         if (this.rotation == Rotation.NONE) {
-            return new BlockPos(5,2,6);
+            return new BlockPos(5, 2, 6);
         } else if (this.rotation == Rotation.CLOCKWISE_90) {
-            return new BlockPos(-5,2,6);
+            return new BlockPos(-5, 2, 6);
         } else if (this.rotation == Rotation.CLOCKWISE_180) {
-            return new BlockPos(-5,2,-6);
+            return new BlockPos(-5, 2, -6);
         } else {
-            return new BlockPos(5,2,-6);
+            return new BlockPos(5, 2, -6);
         }
     }
 
     @Override
-    public boolean isFull() { return GarrisonableBuilding.getNumOccupants(this) >= MAX_OCCUPANTS; }
+    public boolean isFull() {
+        return GarrisonableBuilding.getNumOccupants(this) >= MAX_OCCUPANTS;
+    }
 }

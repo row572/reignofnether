@@ -6,8 +6,8 @@ import com.solegendary.reignofnether.ability.abilities.ConnectPortal;
 import com.solegendary.reignofnether.ability.abilities.DisconnectPortal;
 import com.solegendary.reignofnether.ability.abilities.GotoPortal;
 import com.solegendary.reignofnether.building.*;
-import com.solegendary.reignofnether.keybinds.Keybinding;
 import com.solegendary.reignofnether.hud.AbilityButton;
+import com.solegendary.reignofnether.keybinds.Keybinding;
 import com.solegendary.reignofnether.keybinds.Keybindings;
 import com.solegendary.reignofnether.research.ResearchClient;
 import com.solegendary.reignofnether.research.researchItems.ResearchPortalForCivilian;
@@ -18,6 +18,7 @@ import com.solegendary.reignofnether.resources.ResourceCost;
 import com.solegendary.reignofnether.resources.ResourceCosts;
 import com.solegendary.reignofnether.unit.units.piglins.*;
 import com.solegendary.reignofnether.util.Faction;
+import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
@@ -28,6 +29,7 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Rotation;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -41,10 +43,7 @@ public class Portal extends ProductionBuilding implements NetherConvertingBuildi
     public final static float NON_NETHER_BUILD_TIME_MODIFIER = 2.0f;
 
     public enum PortalType {
-        BASIC,
-        CIVILIAN,
-        MILITARY,
-        TRANSPORT
+        BASIC, CIVILIAN, MILITARY, TRANSPORT
     }
 
     public final static String buildingName = "Basic Portal";
@@ -67,24 +66,38 @@ public class Portal extends ProductionBuilding implements NetherConvertingBuildi
 
     public NetherZone netherConversionZone = null;
 
-    @Override public double getMaxRange() { return 20; }
-    @Override public double getStartingRange() { return 3; }
-    @Override public NetherZone getZone() { return netherConversionZone; }
+    @Override
+    public double getMaxRange() {
+        return 20;
+    }
+
+    @Override
+    public double getStartingRange() {
+        return 3;
+    }
+
+    @Override
+    public NetherZone getZone() {
+        return netherConversionZone;
+    }
 
     @Override
     public void tick(Level tickLevel) {
         super.tick(tickLevel);
 
-        if (!this.getLevel().isClientSide() && this.getBlocksPlaced() >= getBlocksTotal() &&
-             this.getLevel().getBlockState(this.centrePos).isAir())
+        if (!this.getLevel().isClientSide() && this.getBlocksPlaced() >= getBlocksTotal() && this.getLevel()
+            .getBlockState(this.centrePos)
+            .isAir()) {
             this.getLevel().setBlockAndUpdate(this.centrePos, Blocks.FIRE.defaultBlockState());
+        }
     }
 
     @Override
     public boolean shouldBeDestroyed() {
         boolean shouldBeDestroyed = super.shouldBeDestroyed();
-        if (shouldBeDestroyed)
+        if (shouldBeDestroyed) {
             disconnectPortal();
+        }
         return shouldBeDestroyed;
     }
 
@@ -95,7 +108,13 @@ public class Portal extends ProductionBuilding implements NetherConvertingBuildi
     }
 
     public Portal(Level level, BlockPos originPos, Rotation rotation, String ownerName) {
-        super(level, originPos, rotation, ownerName, getAbsoluteBlockData(getRelativeBlockData(level), level, originPos, rotation), false);
+        super(level,
+            originPos,
+            rotation,
+            ownerName,
+            getAbsoluteBlockData(getRelativeBlockData(level), level, originPos, rotation),
+            false
+        );
         this.name = buildingName;
         this.ownerName = ownerName;
         this.portraitBlock = Blocks.GRAY_GLAZED_TERRACOTTA;
@@ -122,10 +141,9 @@ public class Portal extends ProductionBuilding implements NetherConvertingBuildi
             this.abilityButtons.add(connectPortal.getButton(Keybindings.keyQ));
             this.abilityButtons.add(gotoPortal.getButton(Keybindings.keyW));
             this.abilityButtons.add(disconnectPortal.getButton(Keybindings.keyE));
-            this.productionButtons = Arrays.asList(
-                    ResearchPortalForCivilian.getStartButton(this, Keybindings.keyQ),
-                    ResearchPortalForMilitary.getStartButton(this, Keybindings.keyW),
-                    ResearchPortalForTransport.getStartButton(this, Keybindings.keyE)
+            this.productionButtons = Arrays.asList(ResearchPortalForCivilian.getStartButton(this, Keybindings.keyQ),
+                ResearchPortalForMilitary.getStartButton(this, Keybindings.keyW),
+                ResearchPortalForTransport.getStartButton(this, Keybindings.keyE)
             );
         }
     }
@@ -144,14 +162,15 @@ public class Portal extends ProductionBuilding implements NetherConvertingBuildi
     @Override
     public void onBuilt() {
         super.onBuilt();
-        setNetherZone(new NetherZone(centrePos.offset(0,-2,0), getMaxRange(), getStartingRange()));
+        setNetherZone(new NetherZone(centrePos.offset(0, -2, 0), getMaxRange(), getStartingRange()));
     }
 
     public void disconnectPortal() {
         if (destination != null) {
             Building targetBuilding = BuildingUtils.findBuilding(getLevel().isClientSide(), destination);
-            if (targetBuilding instanceof Portal targetPortal && portalType == Portal.PortalType.TRANSPORT)
+            if (targetBuilding instanceof Portal targetPortal && portalType == Portal.PortalType.TRANSPORT) {
                 targetPortal.destination = null;
+            }
         }
         destination = null;
     }
@@ -163,7 +182,9 @@ public class Portal extends ProductionBuilding implements NetherConvertingBuildi
         return block != Blocks.OBSIDIAN && block != Blocks.NETHER_PORTAL;
     }
 
-    public Faction getFaction() {return Faction.PIGLINS;}
+    public Faction getFaction() {
+        return Faction.PIGLINS;
+    }
 
     public void changeStructure(PortalType portalType) {
         String newStructureName = "";
@@ -176,9 +197,7 @@ public class Portal extends ProductionBuilding implements NetherConvertingBuildi
                 this.canAcceptResources = true;
                 popSupply = CIVILIIAN_PORTAL_POPULATION_SUPPLY;
                 if (this.getLevel().isClientSide()) {
-                    this.productionButtons = Arrays.asList(
-                            ResearchResourceCapacity.getStartButton(this, Keybindings.keyQ)
-                    );
+                    this.productionButtons = List.of(ResearchResourceCapacity.getStartButton(this, Keybindings.keyQ));
                 }
             }
             case MILITARY -> {
@@ -187,15 +206,15 @@ public class Portal extends ProductionBuilding implements NetherConvertingBuildi
                 this.icon = new ResourceLocation("minecraft", "textures/block/red_glazed_terracotta.png");
                 newStructureName = structureNameMilitary;
                 this.canSetRallyPoint = true;
-                if (this.getLevel().isClientSide())
-                    this.productionButtons = Arrays.asList(
-                            BruteProd.getStartButton(this, Keybindings.keyQ),
-                            HeadhunterProd.getStartButton(this, Keybindings.keyW),
-                            HoglinProd.getStartButton(this, Keybindings.keyE),
-                            BlazeProd.getStartButton(this, Keybindings.keyR),
-                            WitherSkeletonProd.getStartButton(this, Keybindings.keyT),
-                            GhastProd.getStartButton(this, Keybindings.keyY)
+                if (this.getLevel().isClientSide()) {
+                    this.productionButtons = Arrays.asList(BruteProd.getStartButton(this, Keybindings.keyQ),
+                        HeadhunterProd.getStartButton(this, Keybindings.keyW),
+                        HoglinProd.getStartButton(this, Keybindings.keyE),
+                        BlazeProd.getStartButton(this, Keybindings.keyR),
+                        WitherSkeletonProd.getStartButton(this, Keybindings.keyT),
+                        GhastProd.getStartButton(this, Keybindings.keyY)
                     );
+                }
             }
             case TRANSPORT -> {
                 this.name = buildingNameTransport;
@@ -222,26 +241,26 @@ public class Portal extends ProductionBuilding implements NetherConvertingBuildi
     }
 
     public static AbilityButton getBuildButton(Keybinding hotkey) {
-        return new AbilityButton(
-                Portal.buildingName,
-                new ResourceLocation(ReignOfNether.MOD_ID, "textures/icons/blocks/portal.png"),
-                hotkey,
-                () -> BuildingClientEvents.getBuildingToPlace() == Portal.class,
-                () -> false,
-                () -> BuildingClientEvents.hasFinishedBuilding(CentralPortal.buildingName) ||
-                        ResearchClient.hasCheat("modifythephasevariance"),
-                () -> BuildingClientEvents.setBuildingToPlace(Portal.class),
-                null,
-                List.of(
-                        FormattedCharSequence.forward(Portal.buildingName, Style.EMPTY.withBold(true)),
-                        ResourceCosts.getFormattedCost(cost),
-                        FormattedCharSequence.forward("", Style.EMPTY),
-                        FormattedCharSequence.forward("An obsidian portal used to spread nether blocks.", Style.EMPTY),
-                        FormattedCharSequence.forward("Can be upgraded for various different functions.", Style.EMPTY),
-                        FormattedCharSequence.forward("", Style.EMPTY),
-                        FormattedCharSequence.forward("Can be built on overworld terrain, but at half speed.", Style.EMPTY)
+        return new AbilityButton(Portal.buildingName,
+            new ResourceLocation(ReignOfNether.MOD_ID, "textures/icons/blocks/portal.png"),
+            hotkey,
+            () -> BuildingClientEvents.getBuildingToPlace() == Portal.class,
+            () -> false,
+            () -> BuildingClientEvents.hasFinishedBuilding(CentralPortal.buildingName) || ResearchClient.hasCheat(
+                "modifythephasevariance"),
+            () -> BuildingClientEvents.setBuildingToPlace(Portal.class),
+            null,
+            List.of(FormattedCharSequence.forward(I18n.get("buildings.piglins.reignofnether.portal"),
+                    Style.EMPTY.withBold(true)
                 ),
-                null
+                ResourceCosts.getFormattedCost(cost),
+                FormattedCharSequence.forward("", Style.EMPTY),
+                FormattedCharSequence.forward(I18n.get("buildings.piglins.reignofnether.portal.tooltip1"), Style.EMPTY),
+                FormattedCharSequence.forward(I18n.get("buildings.piglins.reignofnether.portal.tooltip2"), Style.EMPTY),
+                FormattedCharSequence.forward("", Style.EMPTY),
+                FormattedCharSequence.forward(I18n.get("buildings.piglins.reignofnether.portal.tooltip3"), Style.EMPTY)
+            ),
+            null
         );
     }
 }
