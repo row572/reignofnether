@@ -1,6 +1,5 @@
 package com.solegendary.reignofnether.ability.abilities;
 
-import net.minecraft.client.resources.language.I18n;
 import com.solegendary.reignofnether.ReignOfNether;
 import com.solegendary.reignofnether.ability.Ability;
 import com.solegendary.reignofnether.cursor.CursorClientEvents;
@@ -45,7 +44,7 @@ public class Eject extends Ability {
             () -> UnitClientEvents.sendUnitCommand(UnitAction.EJECT),
             null,
             List.of(
-                FormattedCharSequence.forward(I18n.get("abilities.reignofnether.eject"), Style.EMPTY)
+                FormattedCharSequence.forward("Eject", Style.EMPTY)
             ),
             this
         );

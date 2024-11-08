@@ -1,7 +1,5 @@
 package com.solegendary.reignofnether.unit.units.monsters;
 
-import net.minecraft.client.resources.language.I18n;
-import net.minecraft.client.resources.language.I18n;
 import com.solegendary.reignofnether.ReignOfNether;
 import com.solegendary.reignofnether.building.*;
 import com.solegendary.reignofnether.hud.Button;
@@ -78,13 +76,13 @@ public class ZombieProd extends ProductionItem {
             () -> BuildingServerboundPacket.startProduction(prodBuilding.originPos, itemName),
             null,
             List.of(
-                FormattedCharSequence.forward(I18n.get("units.monsters.reignofnether.zombie"), Style.EMPTY.withBold(true)),
+                FormattedCharSequence.forward(ZombieProd.itemName, Style.EMPTY.withBold(true)),
                 ResourceCosts.getFormattedCost(cost),
                 ResourceCosts.getFormattedPopAndTime(cost),
                 FormattedCharSequence.forward("", Style.EMPTY),
-                FormattedCharSequence.forward(I18n.get("units.monsters.reignofnether.zombie.tooltip1"), Style.EMPTY),
+                FormattedCharSequence.forward("An undead monster with a basic melee attack.", Style.EMPTY),
                 FormattedCharSequence.forward("", Style.EMPTY),
-                FormattedCharSequence.forward(I18n.get("units.monsters.reignofnether.zombie.tooltip2"), Style.EMPTY)
+                FormattedCharSequence.forward("Zombies will burn under sunlight.", Style.EMPTY)
             )
         );
     }

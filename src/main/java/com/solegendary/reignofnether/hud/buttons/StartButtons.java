@@ -8,7 +8,6 @@ import com.solegendary.reignofnether.player.PlayerClientEvents;
 import com.solegendary.reignofnether.tutorial.TutorialClientEvents;
 import com.solegendary.reignofnether.tutorial.TutorialStage;
 import com.solegendary.reignofnether.unit.UnitAction;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
@@ -30,8 +29,8 @@ public class StartButtons {
         () -> CursorClientEvents.setLeftClickAction(UnitAction.STARTRTS_VILLAGERS),
         () -> { },
         List.of(
-            FormattedCharSequence.forward(I18n.get("hud.startbuttons.villagers.reignofnether.first"), Style.EMPTY),
-            FormattedCharSequence.forward(I18n.get("hud.startbuttons.villagers.reignofnether.second"), Style.EMPTY)
+            FormattedCharSequence.forward("Join the game as the Villager Faction.", Style.EMPTY),
+            FormattedCharSequence.forward("Spawns 3 villagers to the target location.", Style.EMPTY)
         )
     );
 
@@ -46,8 +45,8 @@ public class StartButtons {
         () -> CursorClientEvents.setLeftClickAction(UnitAction.STARTRTS_MONSTERS),
         () -> { },
         List.of(
-            FormattedCharSequence.forward(I18n.get("hud.startbuttons.monsters.reignofnether.first"), Style.EMPTY),
-            FormattedCharSequence.forward(I18n.get("hud.startbuttons.monsters.reignofnether.second"), Style.EMPTY)
+            FormattedCharSequence.forward("Join the game as the Monster Faction.", Style.EMPTY),
+            FormattedCharSequence.forward("Spawns 3 zombie villagers at the target location.", Style.EMPTY)
         )
     );
 
@@ -62,8 +61,8 @@ public class StartButtons {
         () -> CursorClientEvents.setLeftClickAction(UnitAction.STARTRTS_PIGLINS),
         () -> { },
         List.of(
-            FormattedCharSequence.forward(I18n.get("hud.startbuttons.piglins.reignofnether.first"), Style.EMPTY),
-            FormattedCharSequence.forward(I18n.get("hud.startbuttons.piglins.reignofnether.second"), Style.EMPTY)
+            FormattedCharSequence.forward("Join the game as the Piglin Faction.", Style.EMPTY),
+            FormattedCharSequence.forward("Spawns in 3 piglin grunts to the target location.", Style.EMPTY)
         )
     );
 }

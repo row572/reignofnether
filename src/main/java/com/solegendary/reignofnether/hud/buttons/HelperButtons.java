@@ -11,7 +11,6 @@ import com.solegendary.reignofnether.unit.UnitClientEvents;
 import com.solegendary.reignofnether.unit.interfaces.WorkerUnit;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ChatScreen;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
@@ -42,7 +41,7 @@ public class HelperButtons {
                 MC.setScreen(new ChatScreen(""));
             },
             null,
-            List.of(FormattedCharSequence.forward(I18n.get("hud.helperbuttons.reignofnether.chat"), Style.EMPTY))
+            List.of(FormattedCharSequence.forward("Chat (enter)", Style.EMPTY))
     );
 
     private static int idleWorkerIndex = 0;
@@ -89,7 +88,7 @@ public class HelperButtons {
                 }
             },
             null,
-            List.of(FormattedCharSequence.forward(I18n.get("hud.helperbuttons.reignofnether.idle_workers"), Style.EMPTY))
+            List.of(FormattedCharSequence.forward("Idle workers", Style.EMPTY))
     );
 
     public static final Button buildingCancelButton = new Button(
@@ -105,7 +104,7 @@ public class HelperButtons {
                 hudSelectedBuilding = null;
             },
             null,
-            List.of(FormattedCharSequence.forward(I18n.get("hud.helperbuttons.reignofnether.cancel"), Style.EMPTY))
+            List.of(FormattedCharSequence.forward("Cancel", Style.EMPTY))
     );
 
     public static final Button armyButton = new Button(
@@ -128,6 +127,6 @@ public class HelperButtons {
                     UnitClientEvents.addSelectedUnit(militaryUnit);
             },
             null,
-            List.of(FormattedCharSequence.forward(I18n.get("hud.helperbuttons.reignofnether.select_all_military_units"), Style.EMPTY))
+            List.of(FormattedCharSequence.forward("Select all military units", Style.EMPTY))
     );
 }

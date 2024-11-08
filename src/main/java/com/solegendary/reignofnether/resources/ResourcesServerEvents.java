@@ -1,6 +1,5 @@
 package com.solegendary.reignofnether.resources;
 
-import com.solegendary.reignofnether.ReignOfNether;
 import com.solegendary.reignofnether.building.*;
 import com.solegendary.reignofnether.registrars.BlockRegistrar;
 import com.solegendary.reignofnether.registrars.GameRuleRegistrar;
@@ -25,6 +24,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import java.util.*;
 
 import static com.solegendary.reignofnether.resources.BlockUtils.isLogBlock;
+import static com.solegendary.reignofnether.resources.BlockUtils.numAirOrLeafBlocksBelow;
 
 public class ResourcesServerEvents {
 
@@ -40,9 +40,8 @@ public class ResourcesServerEvents {
 
     // to avoid having to save units too often add on all unit resources here too and just add directly on load
     public static void saveResources(ServerLevel serverLevel) {
-        if (serverLevel == null) {
+        if (serverLevel == null)
             return;
-        }
 
         ResourcesSaveData data = ResourcesSaveData.getInstance(serverLevel);
         data.resources.clear();
@@ -73,13 +72,13 @@ public class ResourcesServerEvents {
                     }
                 }
             }
-            data.resources.add(new Resources(r.ownerName,
-                r.food + r.foodToAdd + unitFood + prodFood,
-                r.wood + r.woodToAdd + unitWood + prodWood,
-                r.ore + r.oreToAdd + unitOre + prodOre
+            data.resources.add(new Resources(
+                    r.ownerName,
+                    r.food + r.foodToAdd + unitFood + prodFood,
+                    r.wood + r.woodToAdd + unitWood + prodWood,
+                    r.ore + r.oreToAdd + unitOre + prodOre
             ));
-            ReignOfNether.LOGGER.info(
-                "saved resources in serverevents: " + r.ownerName + "|" + r.food + "|" + r.wood + "|" + r.ore);
+            System.out.println("saved resources in serverevents: " + r.ownerName + "|" + r.food + "|" + r.wood + "|" + r.ore);
         });
         data.save();
         serverLevel.getDataStorage().save();
@@ -94,16 +93,15 @@ public class ResourcesServerEvents {
             resourcesList.clear();
             resourcesList.addAll(data.resources);
 
-            ReignOfNether.LOGGER.info("saved " + data.resources.size() + " resources in serverevents");
+            System.out.println("saved " + data.resources.size() + " resources in serverevents");
         }
     }
 
     @SubscribeEvent
     public static void onServerStopping(ServerStoppingEvent evt) {
         ServerLevel level = evt.getServer().getLevel(Level.OVERWORLD);
-        if (level != null) {
+        if (level != null)
             saveResources(level);
-        }
     }
 
     public static void resetResources(String playerName) {
@@ -113,7 +111,8 @@ public class ResourcesServerEvents {
                     resources.food = STARTING_FOOD_TUTORIAL;
                     resources.wood = STARTING_WOOD_TUTORIAL;
                     resources.ore = STARTING_ORE_TUTORIAL;
-                } else {
+                }
+                else {
                     resources.food = STARTING_FOOD;
                     resources.wood = STARTING_WOOD;
                     resources.ore = STARTING_ORE;
@@ -128,9 +127,14 @@ public class ResourcesServerEvents {
         for (Resources resources : resourcesList) {
             if (resources.ownerName.equals(resourcesToAdd.ownerName)) {
                 // change serverside instantly
-                resources.changeInstantly(resourcesToAdd.food, resourcesToAdd.wood, resourcesToAdd.ore);
+                resources.changeInstantly(
+                    resourcesToAdd.food,
+                    resourcesToAdd.wood,
+                    resourcesToAdd.ore
+                );
                 // change clientside over time
-                ResourcesClientboundPacket.addSubtractResources(new Resources(resourcesToAdd.ownerName,
+                ResourcesClientboundPacket.addSubtractResources(new Resources(
+                    resourcesToAdd.ownerName,
                     resourcesToAdd.food,
                     resourcesToAdd.wood,
                     resourcesToAdd.ore
@@ -140,13 +144,12 @@ public class ResourcesServerEvents {
     }
 
     public static boolean canAfford(String ownerName, ResourceName resourceName, int cost) {
-        if (cost <= 0) {
+        if (cost <= 0)
             return true;
-        }
 
         for (Resources resources : ResourcesServerEvents.resourcesList)
             if (resources.ownerName.equals(ownerName)) {
-                switch (resourceName) {
+                switch(resourceName) {
                     case FOOD -> {
                         return resources.food >= cost;
                     }
@@ -172,12 +175,14 @@ public class ResourcesServerEvents {
         Resources resources;
         if (TutorialServerEvents.isEnabled()) {
             resources = new Resources(playerName,
-                STARTING_FOOD_TUTORIAL,
-                STARTING_WOOD_TUTORIAL,
-                STARTING_ORE_TUTORIAL
-            );
+                    STARTING_FOOD_TUTORIAL,
+                    STARTING_WOOD_TUTORIAL,
+                    STARTING_ORE_TUTORIAL);
         } else {
-            resources = new Resources(playerName, STARTING_FOOD, STARTING_WOOD, STARTING_ORE);
+            resources = new Resources(playerName,
+                    STARTING_FOOD,
+                    STARTING_WOOD,
+                    STARTING_ORE);
         }
         resourcesList.add(resources);
         ResourcesClientboundPacket.syncResources(resourcesList);
@@ -200,17 +205,16 @@ public class ResourcesServerEvents {
         // prevent natural growth, use our algorithm instead to randomly speed up growth
         else if (block instanceof CropBlock || block instanceof StemBlock) {
             int newAge = blockState.getValue(BlockStateProperties.AGE_7) + (random.nextFloat() > 0.6f ? 1 : 2);
-            if (newAge > 7) {
+            if (newAge > 7)
                 newAge = 7;
-            }
             BlockState grownState = block.defaultBlockState().setValue(BlockStateProperties.AGE_7, newAge);
             evt.getLevel().setBlock(evt.getPos(), grownState, 2);
             evt.setResult(Event.Result.DENY);
-        } else if (block instanceof NetherWartBlock) {
+        }
+        else if (block instanceof NetherWartBlock) {
             int newAge = blockState.getValue(BlockStateProperties.AGE_3) + (random.nextFloat() > 0.42f ? 0 : 1);
-            if (newAge > 3) {
+            if (newAge > 3)
                 newAge = 3;
-            }
             BlockState grownState = block.defaultBlockState().setValue(BlockStateProperties.AGE_3, newAge);
             evt.getLevel().setBlock(evt.getPos(), grownState, 2);
             evt.setResult(Event.Result.DENY);
@@ -221,18 +225,15 @@ public class ResourcesServerEvents {
     public static void onPlayerBlockBreak(BlockEvent.BreakEvent evt) {
         if (BuildingUtils.isPosInsideAnyBuilding(false, evt.getPos())) {
             evt.setCanceled(true);
-            if (evt.getLevel() instanceof ServerLevel serverLevel) {
+            if (evt.getLevel() instanceof ServerLevel serverLevel)
                 serverLevel.setBlockAndUpdate(evt.getPos(), Blocks.AIR.defaultBlockState());
-            }
         }
 
-        if (isLogBlock(evt.getState()) && !BuildingUtils.isPosInsideAnyBuilding(false, evt.getPos())) {
+        if (isLogBlock(evt.getState()) && !BuildingUtils.isPosInsideAnyBuilding(false, evt.getPos()))
             fellAdjacentLogs(evt.getPos(), new ArrayList<>(), (Level) evt.getLevel());
-        }
     }
 
-    // if a tree is touched, destroy any adjacent logs that are above the ground after some time to avoid leaving
-    // tall trees behind
+    // if a tree is touched, destroy any adjacent logs that are above the ground after some time to avoid leaving tall trees behind
     public static void fellAdjacentLogs(BlockPos bp, ArrayList<BlockPos> bpsExcluded, Level level) {
 
         if (!level.getGameRules().getRule(GameRuleRegistrar.LOG_FALLING).get())
@@ -240,38 +241,20 @@ public class ResourcesServerEvents {
 
         BlockState bs = level.getBlockState(bp);
 
-        List<BlockPos> bpsAdj = List.of(bp.north(),
-            bp.south(),
-            bp.east(),
-            bp.west(),
-            bp.above(),
-            bp.above().north(),
-            bp.above().south(),
-            bp.above().east(),
-            bp.above().west(),
-            bp.north().east(),
-            bp.north().west(),
-            bp.south().east(),
-            bp.south().west(),
-            bp.above().north().east(),
-            bp.above().north().west(),
-            bp.above().south().east(),
-            bp.above().south().west()
-        );
+        List<BlockPos> bpsAdj = List.of(
+                bp.north(), bp.south(), bp.east(), bp.west(), bp.above(),
+                bp.above().north(), bp.above().south(), bp.above().east(), bp.above().west(),
+                bp.north().east(), bp.north().west(), bp.south().east(), bp.south().west(),
+                bp.above().north().east(), bp.above().north().west(), bp.above().south().east(), bp.above().south().west());
 
         for (BlockPos bpAdj : bpsAdj) {
             BlockState bsAdj = level.getBlockState(bpAdj);
             if (isLogBlock(bsAdj) && !bpsExcluded.contains(bpAdj)) {
-                Block fallingLogBlock = FALLING_LOGS.get(bsAdj.getBlock());
-                if (fallingLogBlock != null && !BuildingUtils.isPosInsideAnyBuilding(level.isClientSide(), bpAdj)) {
-                    if (bsAdj.hasProperty(BlockStateProperties.AXIS)) {
-                        level.setBlockAndUpdate(bpAdj, fallingLogBlock.defaultBlockState()
-                                .setValue(BlockStateProperties.AXIS, bsAdj.getValue(BlockStateProperties.AXIS)));
-                    } else {
-                        level.setBlockAndUpdate(bpAdj, fallingLogBlock.defaultBlockState());
-                    }
-                    bpsExcluded.add(bpAdj);
-                    fellAdjacentLogs(bpAdj, bpsExcluded, level);
+                if (bsAdj.hasProperty(BlockStateProperties.AXIS)) {
+                    level.setBlockAndUpdate(bpAdj, FALLING_LOGS.get(bsAdj.getBlock()).defaultBlockState()
+                            .setValue(BlockStateProperties.AXIS, bsAdj.getValue(BlockStateProperties.AXIS)));
+                } else {
+                    level.setBlockAndUpdate(bpAdj, FALLING_LOGS.get(bsAdj.getBlock()).defaultBlockState());
                 }
                 bpsExcluded.add(bpAdj);
                 fellAdjacentLogs(bpAdj, bpsExcluded, level);

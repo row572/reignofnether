@@ -14,7 +14,6 @@ import com.solegendary.reignofnether.resources.ResourceCost;
 import com.solegendary.reignofnether.resources.ResourceCosts;
 import com.solegendary.reignofnether.tutorial.TutorialClientEvents;
 import com.solegendary.reignofnether.util.Faction;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
@@ -37,14 +36,7 @@ public class Library extends ProductionBuilding {
     public final static ResourceCost cost = ResourceCosts.LIBRARY;
 
     public Library(Level level, BlockPos originPos, Rotation rotation, String ownerName) {
-        super(
-            level,
-            originPos,
-            rotation,
-            ownerName,
-            getAbsoluteBlockData(getRelativeBlockData(level), level, originPos, rotation),
-            false
-        );
+        super(level, originPos, rotation, ownerName, getAbsoluteBlockData(getRelativeBlockData(level), level, originPos, rotation), false);
         this.name = buildingName;
         this.ownerName = ownerName;
         this.portraitBlock = Blocks.ENCHANTING_TABLE;
@@ -62,51 +54,38 @@ public class Library extends ProductionBuilding {
 
         this.explodeChance = 0.2f;
 
-        if (level.isClientSide()) {
+        if (level.isClientSide())
             this.productionButtons = Arrays.asList(
                 ResearchLingeringPotions.getStartButton(this, Keybindings.keyQ),
                 ResearchEvokerVexes.getStartButton(this, Keybindings.keyE)
             );
-        }
     }
 
-    public Faction getFaction() {
-        return Faction.VILLAGERS;
-    }
+    public Faction getFaction() {return Faction.VILLAGERS;}
 
     public static ArrayList<BuildingBlock> getRelativeBlockData(LevelAccessor level) {
         return BuildingBlockData.getBuildingBlocks(structureName, level);
     }
 
     public static AbilityButton getBuildButton(Keybinding hotkey) {
-        return new AbilityButton(Library.buildingName,
+        return new AbilityButton(
+            Library.buildingName,
             new ResourceLocation("minecraft", "textures/block/enchanting_table_top.png"),
             hotkey,
             () -> BuildingClientEvents.getBuildingToPlace() == Library.class,
             TutorialClientEvents::isEnabled,
-            () -> BuildingClientEvents.hasFinishedBuilding(ArcaneTower.buildingName) || ResearchClient.hasCheat(
-                "modifythephasevariance"),
+            () -> BuildingClientEvents.hasFinishedBuilding(ArcaneTower.buildingName) ||
+                    ResearchClient.hasCheat("modifythephasevariance"),
             () -> BuildingClientEvents.setBuildingToPlace(Library.class),
             null,
-            List.of(FormattedCharSequence.forward(
-                    I18n.get("buildings.villagers.reignofnether.library"),
-                    Style.EMPTY.withBold(true)
-                ),
+            List.of(
+                FormattedCharSequence.forward(Library.buildingName, Style.EMPTY.withBold(true)),
                 ResourceCosts.getFormattedCost(cost),
                 FormattedCharSequence.forward("", Style.EMPTY),
-                FormattedCharSequence.forward(
-                    I18n.get("buildings.villagers.reignofnether.library.tooltip1"),
-                    Style.EMPTY
-                ),
-                FormattedCharSequence.forward(
-                    I18n.get("buildings.villagers.reignofnether.library.tooltip2"),
-                    Style.EMPTY
-                ),
+                FormattedCharSequence.forward("An enchanting table surrounded by pillars of books.", Style.EMPTY),
+                FormattedCharSequence.forward("Used to research magic-related upgrades.", Style.EMPTY),
                 FormattedCharSequence.forward("", Style.EMPTY),
-                FormattedCharSequence.forward(
-                    I18n.get("buildings.villagers.reignofnether.library.tooltip3"),
-                    Style.EMPTY
-                )
+                FormattedCharSequence.forward("Requires an arcane tower.", Style.EMPTY)
             ),
             null
         );

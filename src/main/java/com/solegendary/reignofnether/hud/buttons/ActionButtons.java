@@ -9,7 +9,6 @@ import com.solegendary.reignofnether.resources.ResourceName;
 import com.solegendary.reignofnether.unit.UnitAction;
 import com.solegendary.reignofnether.unit.UnitClientEvents;
 import com.solegendary.reignofnether.unit.interfaces.Unit;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
@@ -32,7 +31,7 @@ public class ActionButtons {
             () -> true,
             () -> CursorClientEvents.setLeftClickAction(UnitAction.BUILD_REPAIR),
             null,
-            List.of(FormattedCharSequence.forward(I18n.get("hud.actionbuttons.reignofnether.build_repair"), Style.EMPTY))
+            List.of(FormattedCharSequence.forward("Build/Repair", Style.EMPTY))
     );
     public static final Button GATHER = new Button(
             "Gather",
@@ -56,7 +55,7 @@ public class ActionButtons {
         () -> true,
         () -> CursorClientEvents.setLeftClickAction(UnitAction.ATTACK),
         null,
-        List.of(FormattedCharSequence.forward(I18n.get("hud.actionbuttons.reignofnether.attack"), Style.EMPTY))
+        List.of(FormattedCharSequence.forward("Attack", Style.EMPTY))
     );
     public static final Button STOP = new Button(
         "Stop",
@@ -68,7 +67,7 @@ public class ActionButtons {
         () -> true,
         () -> sendUnitCommand(UnitAction.STOP),
         null,
-        List.of(FormattedCharSequence.forward(I18n.get("hud.actionbuttons.reignofnether.stop"), Style.EMPTY))
+        List.of(FormattedCharSequence.forward("Stop", Style.EMPTY))
     );
     public static final Button HOLD = new Button(
         "Hold Position",
@@ -83,7 +82,7 @@ public class ActionButtons {
         () -> true,
         () -> sendUnitCommand(UnitAction.HOLD),
         null,
-        List.of(FormattedCharSequence.forward(I18n.get("hud.actionbuttons.reignofnether.hold_position"), Style.EMPTY))
+        List.of(FormattedCharSequence.forward("Hold Position", Style.EMPTY))
     );
     public static final Button MOVE = new Button(
         "Move",
@@ -95,7 +94,7 @@ public class ActionButtons {
         () -> true,
         () -> CursorClientEvents.setLeftClickAction(UnitAction.MOVE),
         null,
-        List.of(FormattedCharSequence.forward(I18n.get("hud.actionbuttons.reignofnether.move"), Style.EMPTY))
+        List.of(FormattedCharSequence.forward("Move", Style.EMPTY))
     );
     public static final Button GARRISON = new Button(
         "Garrison",
@@ -107,7 +106,7 @@ public class ActionButtons {
         () -> true,
         () -> CursorClientEvents.setLeftClickAction(UnitAction.GARRISON),
         null,
-        List.of(FormattedCharSequence.forward(I18n.get("hud.actionbuttons.reignofnether.garrison"), Style.EMPTY))
+        List.of(FormattedCharSequence.forward("Garrison", Style.EMPTY))
     );
     public static final Button UNGARRISON = new Button(
         "Ungarrison",
@@ -119,6 +118,6 @@ public class ActionButtons {
         () -> true,
         () -> sendUnitCommand(UnitAction.UNGARRISON),
         null,
-        List.of(FormattedCharSequence.forward(I18n.get("hud.actionbuttons.reignofnether.ungarrison"), Style.EMPTY))
+        List.of(FormattedCharSequence.forward("Ungarrison", Style.EMPTY))
     );
 }

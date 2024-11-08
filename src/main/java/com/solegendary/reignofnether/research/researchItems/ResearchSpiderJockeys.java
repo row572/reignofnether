@@ -12,7 +12,6 @@ import com.solegendary.reignofnether.research.ResearchClient;
 import com.solegendary.reignofnether.research.ResearchServerEvents;
 import com.solegendary.reignofnether.resources.ResourceCost;
 import com.solegendary.reignofnether.resources.ResourceCosts;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
@@ -28,9 +27,9 @@ public class ResearchSpiderJockeys extends ProductionItem {
     public ResearchSpiderJockeys(ProductionBuilding building) {
         super(building, cost.ticks);
         this.onComplete = (Level level) -> {
-            if (level.isClientSide()) {
+            if (level.isClientSide())
                 ResearchClient.addResearch(this.building.ownerName, ResearchSpiderJockeys.itemName);
-            } else {
+            else {
                 ResearchServerEvents.addResearch(this.building.ownerName, ResearchSpiderJockeys.itemName);
             }
         };
@@ -44,32 +43,33 @@ public class ResearchSpiderJockeys extends ProductionItem {
     }
 
     public static Button getStartButton(ProductionBuilding prodBuilding, Keybinding hotkey) {
-        return new Button(ResearchSpiderJockeys.itemName,
+        return new Button(
+            ResearchSpiderJockeys.itemName,
             14,
             new ResourceLocation(ReignOfNether.MOD_ID, "textures/mobheads/spider.png"),
             new ResourceLocation(ReignOfNether.MOD_ID, "textures/hud/icon_frame_bronze.png"),
             hotkey,
             () -> false,
-            () -> ProductionItem.itemIsBeingProduced(ResearchSpiderJockeys.itemName, prodBuilding.ownerName)
-                || ResearchClient.hasResearch(ResearchSpiderJockeys.itemName),
+            () -> ProductionItem.itemIsBeingProduced(ResearchSpiderJockeys.itemName, prodBuilding.ownerName) ||
+                    ResearchClient.hasResearch(ResearchSpiderJockeys.itemName),
             () -> BuildingClientEvents.hasFinishedBuilding(SpiderLair.buildingName),
             () -> BuildingServerboundPacket.startProduction(prodBuilding.originPos, itemName),
             null,
-            List.of(FormattedCharSequence.forward(I18n.get("research.reignofnether.spider_jockeys"),
-                    Style.EMPTY.withBold(true)
-                ),
+            List.of(
+                FormattedCharSequence.forward(ResearchSpiderJockeys.itemName, Style.EMPTY.withBold(true)),
                 ResourceCosts.getFormattedCost(cost),
                 ResourceCosts.getFormattedTime(cost),
                 FormattedCharSequence.forward("", Style.EMPTY),
-                FormattedCharSequence.forward(I18n.get("research.reignofnether.spider_jockeys.tooltip1"), Style.EMPTY),
+                FormattedCharSequence.forward("Unlocks the ability for skeletons to mount spiders.", Style.EMPTY),
                 FormattedCharSequence.forward("", Style.EMPTY),
-                FormattedCharSequence.forward(I18n.get("research.reignofnether.spider_jockeys.tooltip2"), Style.EMPTY)
+                FormattedCharSequence.forward("Requires a Spider Lair.", Style.EMPTY)
             )
         );
     }
 
     public Button getCancelButton(ProductionBuilding prodBuilding, boolean first) {
-        return new Button(ResearchSpiderJockeys.itemName,
+        return new Button(
+            ResearchSpiderJockeys.itemName,
             14,
             new ResourceLocation(ReignOfNether.MOD_ID, "textures/mobheads/spider.png"),
             new ResourceLocation(ReignOfNether.MOD_ID, "textures/hud/icon_frame_bronze.png"),
